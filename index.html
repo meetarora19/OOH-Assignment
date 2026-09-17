@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DND Highway OOH Inventory Management</title>
+  
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Sidebar UI -->
+  <div id="sidebar">
+    <div class="header">
+      <h1><i data-lucide="map-pin"></i> DND Inventory Manager</h1>
+      <button onclick="resetAllStatuses()" style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Reset All</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Zone</label>
+        <select id="filter-zone" onchange="applyFilters()">
+          <option value="ALL">All Zones</option>
+          <option value="Delhi">Delhi</option>
+          <option value="Noida">Noida</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Display Type</label>
+        <select id="filter-type" onchange="applyFilters()">
+          <option value="ALL">All Types</option>
+        </select>
+      </div>
+      <div class="filter-group" style="grid-column: span 2;">
+        <label>Status Filter</label>
+        <select id="filter-status" onchange="applyFilters()">
+          <option value="ALL">All Statuses</option>
+          <option value="Available">Available</option>
+          <option value="Reserved">Reserved</option>
+          <option value="Owned">Owned</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <span id="site-count">Showing 122 sites</span>
+      <span id="storage-status" style="color: #16a34a; font-weight: 600;">● Progress Saved</span>
+    </div>
+
+    <!-- Site List Container -->
+    <div class="site-list" id="site-list"></div>
+  </div>
+
+  <!-- Map Area & Floating Widgets -->
+  <div id="map-container">
+    <div id="map"></div>
+
+    <!-- Floating Cart Dock -->
+    <div id="cart-dock" ondragover="allowDrop(event)" ondrop="handleDrop(event)">
+      <div class="cart-header">
+        <span><i data-lucide="shopping-cart" style="vertical-align: middle;"></i> Selected Cart Items</span>
+        <span id="cart-badge" style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">0 Sites</span>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 20px;">
+          Drag available sites here, or click '+ Add' on site cards
+        </div>
+      </div>
+      <div class="cart-footer">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem;">
+          <span>Total Area:</span>
+          <strong id="cart-total-area">0 sq.ft</strong>
+        </div>
+        <button class="btn-checkout" id="btn-checkout" onclick="openCheckoutModal()" disabled>
+          Proceed to Checkout <i data-lucide="arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkout-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i data-lucide="credit-card"></i> Order & Reservation Checkout</h2>
+        <button onclick="closeCheckoutModal()" style="background:none; border:none; color:white; cursor:pointer;"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.9rem; color: var(--text-muted);">
+          Review your selected OOH media sites. Choose whether to <strong>Reserve</strong> (hold status) or complete full <strong>Payment & Ownership</strong>.
+        </p>
+        
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Site Code</th>
+              <th>Type</th>
+              <th>Zone</th>
+              <th>Area</th>
+              <th>Est. Price</th>
+            </tr>
+          </thead>
+          <tbody id="checkout-table-body"></tbody>
+        </table>
+
+        <div style="background: #f1f5f9; padding: 12px 16px; border-radius: 8px; display: flex; justify-content: space-between; font-size: 0.9rem;">
+          <span>Total Items: <strong id="modal-site-count">0</strong></span>
+          <span>Grand Total: <strong id="modal-total-price">₹0</strong></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeCheckoutModal()">Cancel</button>
+        <button class="btn-reserve" onclick="processCheckout('Reserved')">
+          <i data-lucide="clock"></i> Reserve Sites
+        </button>
+        <button class="btn-pay" onclick="processCheckout('Owned')">
+          <i data-lucide="check-circle-2"></i> Pay & Own Sites
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div id="toast-container"></div>
+
+  <!-- Load Scripts in Correct Order: Data -> Application Logic -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
