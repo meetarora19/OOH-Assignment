@@ -1,4 +1,11 @@
-// Centralized inventory dataset (122 sites)
+/* =========================================================================
+   In-memory inventory dataset — 122 real OOH sites along the DND corridor.
+   Sourced from the provided "DND Site List — Latitude Longitude" sheet:
+   sNo → Sr.No, id → Site Code, zone/type/location/lit → matching columns,
+   area → Area Sqft, lat/lng → Latitude/Longitude.
+   Per the brief, no backend/database is used — this array IS the "database"
+   for the prototype, and is read directly by app.js.
+   ========================================================================= */
 const SITES_DATA = [
   {sNo:1, id:"DND/D/MU/DMVL/MU-1", zone:"Delhi", type:"UNIPOLE", location:"DELHI TO MAYUR VIHAR - LHS", area:200.0, lit:"Front Lit", lat:28.579559, lng:77.293431},
   {sNo:2, id:"DND/D/MU/DMVL/MU-2", zone:"Delhi", type:"UNIPOLE", location:"DELHI TO MAYUR VIHAR - LHS", area:200.0, lit:"Back Lit", lat:28.579126, lng:77.292535},

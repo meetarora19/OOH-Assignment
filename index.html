@@ -8,7 +8,7 @@
   <!-- Leaflet CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
+
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -21,7 +21,18 @@
   <div id="sidebar">
     <div class="header">
       <h1><i data-lucide="map-pin"></i> DND Inventory Manager</h1>
-      <button onclick="resetAllStatuses()" style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Reset All</button>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button class="header-btn" onclick="showHowItWorks()" aria-label="How this works" title="How this works"><i data-lucide="help-circle"></i></button>
+        <button class="header-btn" onclick="resetAllStatuses()">Reset All</button>
+        <button class="header-btn sidebar-close-btn" onclick="toggleSidebar(false)" aria-label="Close site list"><i data-lucide="x"></i></button>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <i data-lucide="search"></i>
+      <input type="text" id="search-input" placeholder="Search by site code or location…" oninput="applyFilters()" autocomplete="off" />
+      <button id="search-clear" class="search-clear" onclick="clearSearch()" title="Clear search" aria-label="Clear search"><i data-lucide="x"></i></button>
     </div>
 
     <!-- Filters -->
@@ -63,17 +74,20 @@
 
   <!-- Map Area & Floating Widgets -->
   <div id="map-container">
+    <button id="sidebar-open-btn" onclick="toggleSidebar(true)" aria-label="Open site list"><i data-lucide="menu"></i> Sites</button>
     <div id="map"></div>
+    <div id="map-empty-state"><i data-lucide="search-x"></i><span>No sites match your filters</span></div>
 
     <!-- Floating Cart Dock -->
-    <div id="cart-dock" ondragover="allowDrop(event)" ondrop="handleDrop(event)">
+    <div id="cart-dock">
       <div class="cart-header">
         <span><i data-lucide="shopping-cart" style="vertical-align: middle;"></i> Selected Cart Items</span>
         <span id="cart-badge" style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">0 Sites</span>
       </div>
       <div class="cart-items" id="cart-items">
-        <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 20px;">
-          Drag available sites here, or click '+ Add' on site cards
+        <div class="cart-empty">
+          <i data-lucide="package-open"></i>
+          Drag a pin or card here — or tap the + on a site
         </div>
       </div>
       <div class="cart-footer">
@@ -87,6 +101,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Floating chip that follows the pointer while dragging a pin/card -->
+  <div id="drag-ghost"><i data-lucide="map-pin"></i><span id="drag-ghost-label"></span></div>
 
   <!-- Checkout Modal -->
   <div id="checkout-modal">
